@@ -1,3 +1,5 @@
+import constants.Api;
+import constants.ContentType;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -10,8 +12,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class LoginCourierApiTest {
-    private final String COURIER_LOGIN_API_ENDPOINT = "/api/v1/courier/login";
-    private final String CONTENT_TYPE = "application/json";
     private final Courier createCourier = new Courier("ve_ITDGroup", "ve_ITDGroup", "ve_ITDGroup");
     private final Courier loginCourier = new Courier("ve_ITDGroup", "ve_ITDGroup");
     private final Courier notFullLoginCourier = new Courier("ve_ITDGroup");
@@ -39,7 +39,7 @@ public class LoginCourierApiTest {
     @Step("Создание курьера для выполнения теста")
     private void createCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(createCourier)
                 .when()
                 .post("/api/v1/courier")
@@ -51,10 +51,10 @@ public class LoginCourierApiTest {
     @Step("Авторизация курьера")
     private void loginCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(loginCourier)
                 .when()
-                .post(COURIER_LOGIN_API_ENDPOINT)
+                .post(Api.COURIER_LOGIN_API_ENDPOINT)
                 .then()
                 .statusCode(200)
                 .body("id", notNullValue());
@@ -63,10 +63,10 @@ public class LoginCourierApiTest {
     @Step("Попытка авторизации с не корректными данными")
     private void badLoginCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(badLoginCourier)
                 .when()
-                .post(COURIER_LOGIN_API_ENDPOINT)
+                .post(Api.COURIER_LOGIN_API_ENDPOINT)
                 .then()
                 .statusCode(404)
                 .body("message", equalTo("Учетная запись не найдена"));
@@ -75,10 +75,10 @@ public class LoginCourierApiTest {
     @Step("Авторизация без обязательных полей")
     private void notFullLoginCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(notFullLoginCourier)
                 .when()
-                .post(COURIER_LOGIN_API_ENDPOINT)
+                .post(Api.COURIER_LOGIN_API_ENDPOINT)
                 .then()
                 .statusCode(504);
     }
@@ -86,10 +86,10 @@ public class LoginCourierApiTest {
     @Step("Авторизация для получения ID по курьеру")
     private int loginAndExtractCourierId() {
         Response response = given()
-                .contentType("application/json")
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(loginCourier)
                 .when()
-                .post("/api/v1/courier/login")
+                .post(Api.COURIER_LOGIN_API_ENDPOINT)
                 .then()
                 .statusCode(200)
                 .body("id", notNullValue())

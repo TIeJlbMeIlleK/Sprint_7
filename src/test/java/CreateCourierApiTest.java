@@ -1,3 +1,5 @@
+import constants.Api;
+import constants.ContentType;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
@@ -9,15 +11,15 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 
 public class CreateCourierApiTest {
-    private final String COURIER_API_ENDPOINT = "/api/v1/courier";
-    private static final String CONTENT_TYPE = "application/json";
-    private static final Courier createCourier = new Courier("ve_ITDGroup", "ve_ITDGroup", "ve_ITDGroup");
-    private static final Courier deleteCourier = new Courier("ve_ITDGroup", "ve_ITDGroup");
+
+    private static final File createCourier = new File("src/test/resources/createCourier.json");
+    private static final File loginCourier = new File("src/test/resources/loginCourier.json");
     private static final File badCourier = new File("src/test/resources/badCourier.json");
 
     @Before
@@ -35,36 +37,36 @@ public class CreateCourierApiTest {
     }
 
     @Step("Создание клиента")
-    private void createCourier() {
+    public void createCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(createCourier)
                 .when()
-                .post(COURIER_API_ENDPOINT)
+                .post(Api.COURIER_API_ENDPOINT)
                 .then()
                 .statusCode(201)
                 .body("ok", equalTo(true));
     }
 
     @Step("Попытка создания уже существующего клиента")
-    private void createDuplicateCourier() {
+    public void createDuplicateCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(createCourier)
                 .when()
-                .post(COURIER_API_ENDPOINT)
+                .post(Api.COURIER_API_ENDPOINT)
                 .then()
                 .statusCode(409)
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
     @Step("Создание клиента с неполными данными в Json")
-    private void createBadCourier() {
+    public void createBadCourier() {
         given()
-                .contentType(CONTENT_TYPE)
+                .contentType(ContentType.CONTENT_TYPE)
                 .body(badCourier)
                 .when()
-                .post(COURIER_API_ENDPOINT)
+                .post(Api.COURIER_API_ENDPOINT)
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
@@ -77,12 +79,12 @@ public class CreateCourierApiTest {
     }
 
     @Step("Авторизоваться за созданного клиента, для получения ID")
-    private static int loginAndExtractCourierId() {
+    public static int loginAndExtractCourierId() {
         Response response = given()
-                .contentType(CONTENT_TYPE)
-                .body(deleteCourier)
+                .contentType(ContentType.CONTENT_TYPE)
+                .body(loginCourier)
                 .when()
-                .post("/api/v1/courier/login")
+                .post(Api.COURIER_LOGIN_API_ENDPOINT)
                 .then()
                 .statusCode(200)
                 .body("id", notNullValue())
@@ -93,7 +95,7 @@ public class CreateCourierApiTest {
     }
 
     @Step("Удалить курьера по полученному ID")
-    private static void deleteCourierById(int courierId) {
+    public static void deleteCourierById(int courierId) {
         given()
                 .pathParam("id", courierId)
                 .when()
@@ -103,4 +105,3 @@ public class CreateCourierApiTest {
                 .body("ok", equalTo(true));
     }
 }
-
