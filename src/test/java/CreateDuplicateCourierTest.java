@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class CreateCourierApiTest {
+public class CreateDuplicateCourierTest {
     CourierClient courierClient = new CourierClient();
 
     @Before
@@ -20,39 +20,13 @@ public class CreateCourierApiTest {
     @Description("Проверка работы API по созданию курьеров, созданию дублей курьеров, созданию курьеров по невалидным данным")
     @Test
     public void testCourierApi() {
-        createCourier();
-        createDuplicateCourier();
-        createBadCourier();
-    }
-
-    @Step("Создание клиента")
-    public void createCourier() {
         courierClient.createCourier();
-    }
-
-    @Step("Попытка создания уже существующего клиента")
-    public void createDuplicateCourier() {
         courierClient.createDuplicateCourier();
-    }
-
-    @Step("Создание клиента с неполными данными в Json")
-    public void createBadCourier() {
-        courierClient.createBadCourier();
     }
 
     @After
     public void deleteCourier() {
-        int courierId = loginAndExtractCourierId();
-        deleteCourierById(courierId);
-    }
-
-    @Step("Авторизоваться за созданного клиента, для получения ID")
-    public static int loginAndExtractCourierId() {
-        return CourierClient.loginAndExtractCourierId();
-    }
-
-    @Step("Удалить курьера по полученному ID")
-    public static void deleteCourierById(int courierId) {
+        int courierId = CourierClient.loginAndExtractCourierId();
         CourierClient.deleteCourierById(courierId);
     }
 }

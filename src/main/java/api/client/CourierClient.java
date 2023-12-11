@@ -2,6 +2,7 @@ package api.client;
 
 import constants.Api;
 import constants.ContentType;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
 import java.io.File;
@@ -17,6 +18,7 @@ public class CourierClient {
     private static final File badPassword = new File("src/test/resources/badPassword.json");
 
 
+    @Step("Создание курьера")
     public void createCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -28,6 +30,7 @@ public class CourierClient {
                 .body("ok", equalTo(true));
     }
 
+    @Step("Создание дубликата курьера")
     public void createDuplicateCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -39,6 +42,7 @@ public class CourierClient {
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
+    @Step("Создание невалидного курьера")
     public void createBadCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -50,6 +54,7 @@ public class CourierClient {
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
+    @Step("Авторизация курьера")
     public void loginCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -61,6 +66,7 @@ public class CourierClient {
                 .body("id", notNullValue());
     }
 
+    @Step("Авторизация невалидного курьера")
     public void badLoginCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -72,6 +78,7 @@ public class CourierClient {
                 .body("message", equalTo("Учетная запись не найдена"));
     }
 
+    @Step("Авторизация не по полным данным курьера")
     public void notFullLoginCourier() {
         given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -82,6 +89,7 @@ public class CourierClient {
                 .statusCode(504);
     }
 
+    @Step("Получить ID курьера")
     public static int loginAndExtractCourierId() {
         Response response = given()
                 .contentType(ContentType.CONTENT_TYPE)
@@ -97,6 +105,7 @@ public class CourierClient {
         return response.path("id");
     }
 
+    @Step("Удалить курьера по ID")
     public static void deleteCourierById(int courierId) {
         given()
                 .pathParam("id", courierId)

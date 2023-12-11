@@ -1,11 +1,14 @@
 package api.client;
 
+import io.qameta.allure.Step;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.empty;
 
 public class OrdersClient {
 
+    @Step("Получение списка заказов")
     public void testGetOrders() {
         given()
                 .when()
